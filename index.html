@@ -6,8 +6,8 @@
 <meta name="theme-color" content="#0B3B5A">
 <title>SOR App</title>
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
-<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -366,9 +366,25 @@ function renderSettings(){
     '<button class="btn b-ghost" data-act="exportCsv">Export register (.csv for Excel)</button>'+
     '<button class="btn b-ghost" data-act="demo">Load sample data</button>'+
     '<button class="btn b-red" data-act="wipe">Delete all records on this device</button></div>';
-  h+='<div class="hint" style="text-align:center">SOR App v1.4 (installed app) · works offline</div></div>';
+  h+='<div class="card" id="instchk" style="gap:6px"><div class="lbl">APP INSTALL CHECK</div><div class="hint">Checking…</div></div>';
+  h+='<div class="hint" style="text-align:center">SOR App v1.5 (installed app) · works offline</div></div>';
   h+='<div class="bar" style="grid-template-columns:1fr"><button class="btn b-navy" data-act="saveSettings">Save settings</button></div>';
   $app.innerHTML=h;
+  checkInstall();
+}
+function checkInstall(){
+  var box=document.getElementById('instchk');if(!box)return;
+  var files=['manifest.webmanifest','sw.js','icon-192.png','icon-512.png','maskable-512.png','apple-touch-icon.png'];
+  var rows=[['Secure address (https)',location.protocol==='https:'||location.hostname==='localhost']];
+  Promise.all(files.map(function(f){return fetch(f,{cache:'no-store'}).then(function(r){return r.ok;}).catch(function(){return false;});})).then(function(ok){
+    files.forEach(function(f,i){rows.push(['File '+f,ok[i]]);});
+    rows.push(['Offline support running',!!(navigator.serviceWorker&&navigator.serviceWorker.controller)]);
+    var installed=window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches;
+    rows.push(['Opened as installed app',installed,true]);
+    var b=document.getElementById('instchk');if(!b)return;
+    b.innerHTML='<div class="lbl">APP INSTALL CHECK</div>'+rows.map(function(r){return '<div style="display:flex;justify-content:space-between;gap:8px;font-size:13px"><span>'+esc(r[0])+'</span><b style="color:'+(r[1]?'#0A6B27':(r[2]?'#5A6670':'#B42318'))+'">'+(r[1]?(r[2]?'Yes':'OK'):(r[2]?'Not yet':'MISSING'))+'</b></div>';}).join('')+
+      '<div class="hint">Any MISSING file must be uploaded to the same place as index.html. "Offline support" turns OK after the app is reloaded once.</div>';
+  });
 }
 
 // ---------- log book ----------

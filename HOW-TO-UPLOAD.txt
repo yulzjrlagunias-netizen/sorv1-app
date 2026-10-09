@@ -1,0 +1,19 @@
+SOR App v1.5 — upload checklist
+================================
+All files are now at ONE level (no "icons" folder), so they can be uploaded from a phone or a laptop.
+
+1. In the GitHub repository: Add file > Upload files. Select ALL these files and upload (replace old ones):
+     index.html
+     manifest.webmanifest
+     sw.js
+     icon-192.png
+     icon-512.png
+     maskable-512.png
+     apple-touch-icon.png
+     favicon-32.png
+   Click "Commit changes".
+2. On the "Code" tab, all 8 files must be listed directly — not inside a folder.
+3. Wait 2 minutes. On the phone, open the app address in Chrome and pull down to refresh twice.
+4. In the app: Settings > scroll down to "APP INSTALL CHECK". Every line except
+   "Opened as installed app" should say OK.
+5. Chrome ⋮ > "Install and create shortcut" > Install.
