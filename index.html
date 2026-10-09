@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0B3B5A">
+<title>SOR App</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SOR App">
+<style>
+:root{--navy:#0B3B5A;--navy2:#164B6E;--green:#0B8530;--green-d:#0A6B27;--orange:#EE6F30;--ink:#16222B;--ink2:#36434D;--mute:#5A6670;--line:#DCD7CE;--line2:#BDB6AA;--bg:#F4F2EE;--card:#fff;--red:#B42318}
+*{box-sizing:border-box}
+html,body{margin:0;background:#E9E6E0;color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;-webkit-text-size-adjust:100%}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+#app{max-width:560px;margin:0 auto;min-height:100vh;background:var(--bg);position:relative;padding-bottom:140px}
+.top{background:var(--navy);color:#fff;padding:calc(14px + env(safe-area-inset-top)) 16px 14px;position:sticky;top:0;z-index:5}
+.wide{max-width:1100px!important}
+.tw{overflow-x:auto;background:var(--card,#fff);border:1px solid var(--line);border-radius:12px}
+.tt{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
+.tt th,.tt td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+.tt th{font-size:11px;letter-spacing:.4px;text-transform:uppercase;color:var(--mute);background:#F7F5F1}
+.tt td.n,.tt th.n{text-align:right}
+.tgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:16px}
+.wk{display:flex;align-items:flex-end;gap:8px;height:150px;padding:12px;background:#fff;border:1px solid var(--line);border-radius:12px}
+.wk div{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;height:100%;font-size:11px;color:var(--mute);min-width:0}
+.wk b{display:block;width:100%;background:var(--navy);border-radius:4px 4px 0 0;min-height:2px}
+.wk span.v{font-weight:800;color:var(--ink);font-size:12px}
+.install{display:none;margin:12px 16px 0;background:#E1ECF3;color:#0B3B5A;border-radius:12px;padding:10px 12px;font-size:13px;font-weight:600;align-items:center;gap:10px}
+.install.show{display:flex}
+.install button{margin-left:auto;min-height:40px;border:none;border-radius:10px;background:#0B3B5A;color:#fff;font-weight:800;padding:0 14px}
+.top-row{display:flex;align-items:center;gap:8px}
+.brand{font-weight:800;font-size:20px;letter-spacing:.5px;line-height:1.1}
+.sub{font-size:12px;color:#BFD3E0}
+.iconbtn{width:44px;height:44px;border:none;background:transparent;color:#fff;display:flex;align-items:center;justify-content:center;border-radius:10px;flex-shrink:0}
+.iconbtn:active{background:rgba(255,255,255,.12)}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:12px}
+.stat{background:var(--navy2);border-radius:10px;padding:10px 8px;border:none;color:#fff;text-align:left}
+.stat b{display:block;font-size:26px;line-height:1}
+.stat span{font-size:11px;color:#D5E3EC}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:12px 16px 4px}
+.chip{flex-shrink:0;min-height:36px;padding:0 14px;border-radius:18px;border:1px solid var(--line2);background:#fff;font-size:13px;font-weight:600}
+.chip.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.search{padding:8px 16px 0}
+.search input{width:100%;height:42px;border-radius:10px;border:1px solid var(--line2);padding:0 12px;background:#fff;font-size:15px}
+.list{padding:10px 16px;display:flex;flex-direction:column;gap:10px}
+.item{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;gap:12px;text-align:left;width:100%}
+.rac{width:44px;height:44px;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;font-weight:800;font-size:20px;line-height:1}
+.rac small{font-size:9px;font-weight:700;letter-spacing:.5px}
+.rE{background:#7A1010;color:#fff}.rH{background:var(--orange);color:#1A0E05}.rM{background:#F2C230;color:#231A00}.rL{background:var(--green);color:#fff}.rP{background:#E1ECF3;color:var(--navy)}
+.meta{font-size:12px;color:var(--mute);font-weight:600}
+.ttl{font-size:15px;font-weight:700;margin:2px 0}
+.desc{font-size:13px;color:var(--ink2);line-height:1.4}
+.pill{font-size:11px;font-weight:700;padding:3px 8px;border-radius:10px;white-space:nowrap}
+.s-open{background:#FDEBD9;color:#9A3A0B}.s-overdue{background:var(--red);color:#fff}.s-closed{background:#DDEFE2;color:var(--green-d)}.s-positive{background:#E1ECF3;color:var(--navy)}
+.empty{text-align:center;color:var(--mute);padding:40px 16px;font-size:14px}
+.fab{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;width:calc(min(560px,100%) - 32px);height:56px;border:none;border-radius:14px;background:var(--orange);color:#1A0E05;font-size:17px;font-weight:800;box-shadow:0 6px 16px rgba(11,59,90,.25);z-index:6;display:flex;align-items:center;justify-content:center;gap:8px}
+.form{padding:16px;display:flex;flex-direction:column;gap:20px}
+.sec{display:flex;flex-direction:column;gap:8px}
+.sec-h{font-size:13px;font-weight:800;color:var(--navy);letter-spacing:.3px}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:600;color:var(--ink2)}
+.inp{height:46px;border-radius:10px;border:1px solid var(--line2);background:#fff;padding:0 10px;font-size:16px;width:100%;min-width:0}
+textarea.inp{height:auto;padding:10px;resize:vertical;min-height:76px;line-height:1.4}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.opt{min-height:46px;border-radius:10px;border:2px solid var(--line);background:#fff;font-size:14px;font-weight:600;padding:6px 10px;text-align:left}
+.opt.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.opt.on.pos{background:var(--green);border-color:var(--green)}
+.cat{min-height:40px;padding:0 12px;border-radius:20px;border:1px solid var(--line2);background:#fff;font-size:13px;font-weight:600}
+.cat.on{background:var(--orange);border-color:var(--orange);color:#1A0E05}
+.wrap{display:flex;flex-wrap:wrap;gap:8px}
+.ref{font-size:12px;background:#E1ECF3;border-radius:8px;padding:8px 10px;color:var(--ink2)}
+.photos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.ph{position:relative;height:96px;border-radius:10px;overflow:hidden;background:#D9D4CB}
+.ph img{width:100%;height:100%;object-fit:cover;display:block}
+.ph button{position:absolute;top:4px;right:4px;width:28px;height:28px;border-radius:14px;border:none;background:rgba(0,0,0,.6);color:#fff;font-size:16px;line-height:1}
+.addph{height:96px;border:2px dashed var(--navy);border-radius:10px;background:#fff;color:var(--navy);font-size:12px;font-weight:700;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;position:relative;overflow:hidden}
+.addph input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.addph.after{border-color:var(--green);color:var(--green-d)}
+.matrix{background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px;display:grid;grid-template-columns:78px repeat(5,minmax(0,1fr));gap:5px;align-items:center}
+.mh{font-size:10px;font-weight:700;color:var(--ink2);text-align:center;line-height:1.15}
+.ml{font-size:11px;font-weight:700;color:var(--ink2);line-height:1.15}
+.mc{height:44px;border:none;border-radius:8px;font-weight:800;font-size:18px;opacity:.5}
+.mc.on{opacity:1;outline:3px solid var(--navy);outline-offset:2px}
+.racnow{font-size:13px;font-weight:800;padding:4px 10px;border-radius:8px}
+.toggle{min-height:52px;border-radius:12px;border:2px solid var(--line2);background:#fff;display:flex;align-items:center;gap:12px;padding:0 14px;font-size:15px;font-weight:700;text-align:left;width:100%}
+.toggle .box{width:26px;height:26px;border-radius:6px;border:2px solid currentColor;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.toggle.on{background:#FDECEA;border-color:var(--red);color:#9A1C12}
+.bar{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:min(560px,100%);background:#fff;border-top:1px solid var(--line);padding:12px 16px calc(14px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;z-index:6}
+.btn{min-height:52px;border-radius:12px;border:none;font-size:15px;font-weight:800;padding:0 12px}
+.b-navy{background:var(--navy);color:#fff}.b-green{background:var(--green);color:#fff}.b-ghost{background:#fff;border:2px solid var(--navy);color:var(--navy)}.b-ghostg{background:#fff;border:2px solid var(--green);color:var(--green-d)}.b-red{background:#fff;border:2px solid var(--red);color:var(--red)}
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:10px}
+.lbl{font-size:11px;font-weight:800;color:var(--mute);letter-spacing:.3px}
+.val{font-size:14px;line-height:1.5;white-space:pre-wrap}
+.trail{display:flex;flex-direction:column;gap:10px}
+.step{display:flex;gap:10px}
+.dot{width:14px;height:14px;border-radius:7px;border:2px solid var(--line2);background:#fff;margin-top:3px;flex-shrink:0}
+.dot.on{background:var(--green);border-color:var(--green)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);top:14px;width:calc(min(560px,100%) - 32px);background:var(--green);color:#fff;border-radius:12px;padding:12px 14px;font-weight:700;font-size:14px;z-index:20;box-shadow:0 6px 16px rgba(0,0,0,.2)}
+.setrow{display:flex;flex-direction:column;gap:8px}
+.hint{font-size:12px;color:var(--mute);line-height:1.4}
+#print{display:none}
+@media print{
+  @page{size:A4;margin:10mm}
+  html,body{background:#fff}
+  #app,.fab,.bar,.toast{display:none!important}
+  #print{display:block}
+}
+/* report */
+.rp{font-size:11px;color:#16222B;font-family:Arial,Helvetica,sans-serif}
+.rp-page{page-break-after:always}
+.rp-page:last-child{page-break-after:auto}
+.rp-head{display:flex;align-items:center;gap:12px;border-bottom:3px solid #0B3B5A;padding-bottom:8px;margin-bottom:8px}
+.rp-head h1{margin:0;font-size:20px;color:#0B3B5A;letter-spacing:.3px}
+.rp-logo{width:56px;height:56px;border-radius:28px;border:1px dashed #5A6670;display:flex;align-items:center;justify-content:center;font-size:8px;color:#5A6670;text-align:center;flex-shrink:0}
+.rp table{width:100%;border-collapse:collapse}
+.rp td,.rp th{border:1px solid #16222B;padding:4px 6px;vertical-align:top;text-align:left}
+.rp th{background:#EEF3F6;width:22%;font-weight:700}
+.rp-sec{margin-top:8px;border:1px solid #16222B}
+.rp-sec h2{margin:0;padding:4px 8px;font-size:12px;color:#fff;background:#0B3B5A;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.rp-sec .in{padding:6px 8px;white-space:pre-wrap;line-height:1.45}
+.rp .ck{display:inline-block;width:10px;height:10px;border:1.3px solid #16222B;margin-right:4px;vertical-align:-1px}
+.rp .ck.on{background:#0B3B5A;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.rp-ph{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:6px 8px}
+.rp-ph img{width:100%;height:190px;object-fit:cover;border:1px solid #BDB6AA}
+.rp-ph .none{height:190px;border:1px solid #BDB6AA;display:flex;align-items:center;justify-content:center;color:#5A6670}
+.rp-sig{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid #16222B;margin-top:8px}
+.rp-sig div{padding:6px 8px;border-right:1px solid #BDB6AA;min-height:62px}
+.rp-sig div:last-child{border-right:none}
+.rp-foot{display:flex;justify-content:space-between;margin-top:8px;font-size:9px;color:#36434D;border-top:1px solid #BDB6AA;padding-top:4px}
+.rp *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.rp .racb{display:inline-block;padding:1px 8px;border-radius:4px;font-weight:700}
+.rp-reg td,.rp-reg th{font-size:10px;width:auto}
+.rp-reg tr{page-break-inside:avoid}
+.rp-reg thead{display:table-header-group}
+</style>
+</head>
+<body>
+<div id="app"><noscript><div style="padding:24px;font:16px/1.5 sans-serif">This app needs JavaScript. Open the file in Chrome or Safari, not in a file preview or HTML viewer.</div></noscript></div>
+<div id="print"></div>
+<script>
+(function(){
+'use strict';
+// ---------- constants ----------
+var CATS = {
+  'Fall Protection':'EM 385-1-1 · Section 21 Fall Protection',
+  'PPE':'EM 385-1-1 · Section 05 Personal Protective Equipment',
+  'Housekeeping':'EM 385-1-1 · Section 14 Material Handling & Housekeeping',
+  'Electrical':'EM 385-1-1 · Section 11 Electrical',
+  'Scaffolding':'EM 385-1-1 · Section 22 Work Platforms',
+  'Excavation':'EM 385-1-1 · Section 25 Excavations',
+  'Lifting & Rigging':'EM 385-1-1 · Section 16 Cranes & Hoisting',
+  'Hot Work':'EM 385-1-1 · Section 10 Welding & Cutting',
+  'Vehicles & Traffic':'EM 385-1-1 · Section 18 Vehicles & Machinery',
+  'Hand & Power Tools':'EM 385-1-1 · Section 13 Hand & Power Tools',
+  'Fire Prevention':'EM 385-1-1 · Section 09 Fire Prevention',
+  'Heat Stress':'EM 385-1-1 · Section 06 Hazardous Agents (Heat)',
+  'Environmental':'EM 385-1-1 · Section 06 / Environmental Protection Plan',
+  'Other':''
+};
+var TYPES = ['Unsafe Act','Unsafe Condition','Near Miss','Positive','Environmental','Health / Hygiene'];
+var SEVS = ['Catastrophic','Critical','Marginal','Negligible'];
+var PROBS = ['Frequent','Likely','Occasional','Seldom','Unlikely'];
+var M = [['E','E','H','H','M'],['E','H','H','M','L'],['H','M','M','L','L'],['M','L','L','L','L']];
+var RACN = {E:'Extremely High',H:'High',M:'Moderate',L:'Low','+':'Positive'};
+var RACC = {E:['#7A1010','#fff'],H:['#EE6F30','#1A0E05'],M:['#F2C230','#231A00'],L:['#0B8530','#fff'],'+':['#E1ECF3','#0B3B5A']};
+var DEF_SETTINGS = {observer:'',initials:'',designation:'SSHO',project:'',contract:'',prime:'Yamauchi Gumi MVL',
+  locations:'Bldg 710 · Level 1\nBldg 710 · Level 3\nBldg 710 · Roof\nLaydown yard\nGate 3',
+  contractors:'Yamauchi Gumi MVL (Prime)\nSubcontractor A\nSubcontractor B', docno:'HSE-YGMVL-SOR', seq:0};
+
+// ---------- storage (IndexedDB, falls back to memory) ----------
+var db=null, mem={items:{},meta:{}};
+var storeMode='memory';
+function lsOK(){try{localStorage.setItem('__t','1');localStorage.removeItem('__t');return true;}catch(e){return false;}}
+function lsSave(){if(storeMode!=='local')return;try{localStorage.setItem('sor-app-items',JSON.stringify(mem.items));localStorage.setItem('sor-app-meta',JSON.stringify(mem.meta));}catch(e){showStorageWarn('Phone storage is full — export a backup and delete old records.');}}
+function lsLoad(){try{mem.items=JSON.parse(localStorage.getItem('sor-app-items')||'{}')||{};mem.meta=JSON.parse(localStorage.getItem('sor-app-meta')||'{}')||{};}catch(e){}}
+function openDB(){return new Promise(function(res){
+  var done=false;function fin(){if(done)return;done=true;
+    if(db){storeMode='indexeddb';}else if(lsOK()){storeMode='local';lsLoad();}else{storeMode='memory';}
+    res();}
+  setTimeout(fin,2500);
+  try{if(!window.indexedDB){fin();return;}var r=indexedDB.open('sor-app',1);
+    r.onupgradeneeded=function(){var d=r.result;d.createObjectStore('items',{keyPath:'id'});d.createObjectStore('meta');};
+    r.onsuccess=function(){if(!done)db=r.result;fin();};r.onerror=function(){fin();};r.onblocked=function(){fin();};
+  }catch(e){fin();}
+});}
+function showStorageWarn(msg){var w=document.getElementById('swarn');if(!w){w=document.createElement('div');w.id='swarn';w.style.cssText='position:fixed;left:0;right:0;top:0;z-index:30;background:#B42318;color:#fff;font:600 13px/1.4 system-ui,sans-serif;padding:10px 14px;text-align:center';document.body.appendChild(w);}w.textContent=msg;}
+function tx(store,mode){return db.transaction(store,mode).objectStore(store);}
+function getAll(){return new Promise(function(res){
+  if(!db){res(Object.values(mem.items));return;}
+  var q=tx('items','readonly').getAll();q.onsuccess=function(){res(q.result||[]);};q.onerror=function(){res([]);};
+});}
+function putItem(it){mem.items[it.id]=it;if(!db){lsSave();return Promise.resolve();}return new Promise(function(res){var q=tx('items','readwrite').put(it);q.onsuccess=res;q.onerror=function(){alert('Could not save — device storage may be full.');res();};});}
+function delItem(id){delete mem.items[id];if(!db){lsSave();return Promise.resolve();}return new Promise(function(res){var q=tx('items','readwrite').delete(id);q.onsuccess=res;q.onerror=res;});}
+function getMeta(k){if(!db)return Promise.resolve(mem.meta[k]);return new Promise(function(res){var q=tx('meta','readonly').get(k);q.onsuccess=function(){res(q.result);};q.onerror=function(){res();};});}
+function putMeta(k,v){mem.meta[k]=v;if(!db){lsSave();return Promise.resolve();}return new Promise(function(res){var q=tx('meta','readwrite').put(v,k);q.onsuccess=res;q.onerror=res;});}
+
+// ---------- state ----------
+var S={view:'home',filter:'all',q:'',items:[],settings:Object.assign({},DEF_SETTINGS),cur:null,draft:null,back:'home',log:{range:'month',from:'',to:'',status:'all',cat:'all',con:'all'}};
+var $app=document.getElementById('app');
+
+// ---------- helpers ----------
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function pad(n,l){n=String(n);while(n.length<l)n='0'+n;return n;}
+function todayISO(){var d=new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1,2)+'-'+pad(d.getDate(),2);}
+function nowTime(){var d=new Date();return pad(d.getHours(),2)+':'+pad(d.getMinutes(),2);}
+function fmtDate(iso){if(!iso)return '—';var p=iso.split('-');var mo=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];return p[2]+' '+mo[+p[1]-1]+' '+p[0];}
+function lines(s){return String(s||'').split('\n').map(function(x){return x.trim();}).filter(Boolean);}
+function statusOf(it){if(it.status==='positive')return 'positive';if(it.status==='closed')return 'closed';if(it.due&&it.due<todayISO())return 'overdue';return 'open';}
+var SL={open:'Open',overdue:'Overdue',closed:'Closed',positive:'Positive'};
+function racCls(r){return r==='+'?'rP':'r'+r;}
+function toast(msg){var t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.appendChild(t);setTimeout(function(){t.remove();},2600);}
+var ICON={
+  back:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>',
+  gear:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg>',
+  plus:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+  cam:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>',
+  team:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+  book:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg>',
+  print:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>'
+};
+
+// ---------- photo compression ----------
+function compress(file){return new Promise(function(res){
+  var fr=new FileReader();
+  fr.onload=function(){var img=new Image();img.onload=function(){
+      var max=1280,w=img.naturalWidth,h=img.naturalHeight,sc=Math.min(1,max/Math.max(w,h));
+      var c=document.createElement('canvas');c.width=Math.round(w*sc);c.height=Math.round(h*sc);
+      var x=c.getContext('2d');x.drawImage(img,0,0,c.width,c.height);
+      // timestamp stamp
+      var stamp=fmtDate(todayISO())+' '+nowTime();x.font='bold '+Math.max(14,Math.round(c.width/40))+'px Arial';
+      var tw=x.measureText(stamp).width;x.fillStyle='rgba(0,0,0,.55)';x.fillRect(c.width-tw-20,c.height-Math.round(c.width/40)-18,tw+20,Math.round(c.width/40)+18);
+      x.fillStyle='#fff';x.fillText(stamp,c.width-tw-10,c.height-10);
+      res(c.toDataURL('image/jpeg',0.72));};
+    img.onerror=function(){alert('This photo format could not be read. Please use a JPG/PNG photo.');res(null);};
+    img.src=fr.result;};
+  fr.onerror=function(){res(null);};
+  fr.readAsDataURL(file);
+});}
+
+// ---------- rendering ----------
+function render(){
+  $app.classList.toggle('wide',S.view==='team');
+  if(S.view==='home')return renderHome();
+  if(S.view==='form')return renderForm();
+  if(S.view==='detail')return renderDetail();
+  if(S.view==='settings')return renderSettings();
+  if(S.view==='logs')return renderLogs();
+  if(S.view==='team')return renderTeam();
+}
+function counts(){var c={total:0,open:0,overdue:0,positive:0,today:0};var t=todayISO();
+  S.items.forEach(function(it){var s=statusOf(it);c.total++;if(s==='open'||s==='overdue')c.open++;if(s==='overdue')c.overdue++;if(s==='positive')c.positive++;if(it.date===t)c.today++;});return c;}
+function filtered(){var q=S.q.toLowerCase();
+  return S.items.filter(function(it){var s=statusOf(it);
+    if(S.filter==='today'&&it.date!==todayISO())return false;
+    if(S.filter==='open'&&!(s==='open'||s==='overdue'))return false;
+    if(['overdue','closed','positive'].indexOf(S.filter)>=0&&s!==S.filter)return false;
+    if(q){var hay=[it.id,it.cat,it.type,it.loc,it.contractor,it.desc,it.resp].join(' ').toLowerCase();if(hay.indexOf(q)<0)return false;}
+    return true;
+  }).sort(function(a,b){return (b.createdAt||'').localeCompare(a.createdAt||'');});}
+function renderHome(){
+  var c=counts(),f=filtered();
+  var fl=[['all','All'],['today','Today'],['open','Open'],['overdue','Overdue'],['positive','Positive'],['closed','Closed']];
+  var h='<div class="top"><div class="top-row"><div style="flex:1"><div class="brand">SAFETY OBSERVATIONS</div><div class="sub">'+esc(S.settings.project||'Sagami General Depot')+'</div></div>'+
+    '<button class="iconbtn" data-act="logs" aria-label="Log book" style="width:auto;padding:0 10px;gap:6px;font-weight:700;font-size:13px;border:1px solid rgba(255,255,255,.35)">'+ICON.book+'Log Book</button>'+
+    '<button class="iconbtn" data-act="team" aria-label="Team overview">'+ICON.team+'</button>'+
+    '<button class="iconbtn" data-act="settings" aria-label="Settings">'+ICON.gear+'</button></div>'+
+    '<div class="stats">'+
+    '<button class="stat" data-filter="today"><b>'+c.today+'</b><span>Today</span></button>'+
+    '<button class="stat" data-filter="open"><b style="color:#FFB48C">'+c.open+'</b><span>Open</span></button>'+
+    '<button class="stat" data-filter="overdue"><b style="color:#FF8A80">'+c.overdue+'</b><span>Overdue</span></button>'+
+    '<button class="stat" data-filter="positive"><b style="color:#8FE0A6">'+c.positive+'</b><span>Positive</span></button></div></div>';
+  if(deferredPrompt)h+='<div class="install show">Install SOR App on this phone for one-tap access and offline use.<button data-install>Install</button></div>';
+  h+='<div class="chips">'+fl.map(function(x){return '<button class="chip'+(S.filter===x[0]?' on':'')+'" data-filter="'+x[0]+'">'+x[1]+'</button>';}).join('')+'</div>';
+  h+='<div class="search"><input type="search" id="q" placeholder="Search SOR no., location, contractor…" value="'+esc(S.q)+'"></div>';
+  h+='<div class="list">';
+  if(!f.length)h+='<div class="empty">'+(S.items.length?'No observations in this view.':'No observations yet.<br>Tap <b>New Observation</b> to record your first one.')+'</div>';
+  f.forEach(function(it){var s=statusOf(it);
+    h+='<button class="item" data-open="'+esc(it.id)+'"><div class="rac '+racCls(it.rac)+'">'+(it.rac==='+'?'+':esc(it.rac))+'<small>RAC</small></div>'+
+      '<div style="flex:1;min-width:0"><div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><div class="meta">'+esc(it.id)+' · '+fmtDate(it.date)+' '+esc(it.time)+'</div><span class="pill s-'+s+'">'+SL[s]+'</span></div>'+
+      '<div class="ttl">'+esc(it.cat)+' — '+esc(it.type)+'</div><div class="desc">'+esc((it.desc||'').slice(0,90))+((it.desc||'').length>90?'…':'')+'</div>'+
+      '<div class="meta" style="font-weight:500;margin-top:3px">'+esc(it.loc)+(it.due&&s!=='closed'&&s!=='positive'?' · Due '+fmtDate(it.due):'')+'</div></div></button>';});
+  h+='</div><button class="fab" data-act="new">'+ICON.plus+' New Observation</button>';
+  $app.innerHTML=h;
+  var q=document.getElementById('q');q.addEventListener('input',function(){S.q=q.value;var pos=q.selectionStart;renderHome();var n=document.getElementById('q');n.focus();try{n.setSelectionRange(pos,pos);}catch(e){}});
+}
+function blankDraft(){var st=S.settings;return {id:null,date:todayISO(),time:nowTime(),type:'Unsafe Act',cat:'Fall Protection',loc:lines(st.locations)[0]||'',contractor:lines(st.contractors)[0]||'',activity:'',desc:'',hazard:'',sev:1,prob:1,stop:false,immediate:'',corrective:'',resp:'',due:'',before:[],after:[],status:'open'};}
+function draftRac(d){return d.type==='Positive'?'+':M[d.sev][d.prob];}
+function selectOpts(list,val){var l=list.slice();if(val&&l.indexOf(val)<0)l.unshift(val);return l.map(function(x){return '<option'+(x===val?' selected':'')+'>'+esc(x)+'</option>';}).join('');}
+function renderForm(){
+  var d=S.draft,st=S.settings,r=draftRac(d),rc=RACC[r],isPos=d.type==='Positive';
+  var h='<div class="top"><div class="top-row"><button class="iconbtn" data-act="cancel" aria-label="Back">'+ICON.back+'</button><div style="flex:1"><div class="brand" style="font-size:18px">'+(d.id?'EDIT '+esc(d.id):'NEW OBSERVATION')+'</div><div class="sub">'+fmtDate(d.date)+' · '+esc(d.time)+'</div></div></div></div>';
+  h+='<div class="form">';
+  h+='<div class="sec"><div class="sec-h">1 · PHOTO (BEFORE)</div><div class="photos">'+
+    d.before.map(function(p,i){return '<div class="ph"><img src="'+p+'" alt="Before photo '+(i+1)+'"><button data-delph="before:'+i+'" aria-label="Remove photo">×</button></div>';}).join('')+
+    (d.before.length<3?'<label class="addph">'+ICON.cam+'Add photo<input type="file" accept="image/*" data-photo="before"></label>':'')+'</div></div>';
+  h+='<div class="sec"><div class="sec-h">2 · OBSERVATION TYPE</div><div class="grid2">'+TYPES.map(function(t){return '<button class="opt'+(d.type===t?' on':'')+(t==='Positive'?' pos':'')+'" data-type="'+esc(t)+'">'+esc(t)+'</button>';}).join('')+'</div></div>';
+  h+='<div class="sec"><div class="sec-h">3 · CATEGORY</div><div class="wrap">'+Object.keys(CATS).map(function(k){return '<button class="cat'+(d.cat===k?' on':'')+'" data-cat="'+esc(k)+'">'+esc(k)+'</button>';}).join('')+'</div>'+(CATS[d.cat]?'<div class="ref">Reference: <b>'+esc(CATS[d.cat])+'</b></div>':'')+'</div>';
+  h+='<div class="sec"><div class="sec-h">4 · WHERE &amp; WHO</div>'+
+    '<div class="grid2"><label class="f">Date<input class="inp" type="date" data-f="date" value="'+esc(d.date)+'"></label><label class="f">Time<input class="inp" type="time" data-f="time" value="'+esc(d.time)+'"></label></div>'+
+    '<label class="f">Location / Area<select class="inp" data-f="loc">'+selectOpts(lines(st.locations),d.loc)+'</select></label>'+
+    '<label class="f">Contractor / Subcontractor<select class="inp" data-f="contractor">'+selectOpts(lines(st.contractors),d.contractor)+'</select></label>'+
+    '<label class="f">Activity / work being done<input class="inp" data-f="activity" value="'+esc(d.activity)+'" placeholder="e.g. Scaffold dismantling"></label></div>';
+  h+='<div class="sec"><div class="sec-h">5 · WHAT DID YOU SEE?</div>'+
+    '<label class="f">Description of observation<textarea class="inp" data-f="desc" placeholder="Describe what you observed">'+esc(d.desc)+'</textarea></label>'+
+    (isPos?'':'<label class="f">Potential hazard / consequence<input class="inp" data-f="hazard" value="'+esc(d.hazard)+'" placeholder="e.g. Fall from height — serious injury"></label>')+'</div>';
+  if(!isPos){
+    h+='<div class="sec"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><div class="sec-h">6 · RISK ASSESSMENT CODE</div><div class="racnow" style="background:'+rc[0]+';color:'+rc[1]+'">RAC '+r+' · '+RACN[r]+'</div></div>'+
+      '<div class="hint">Tap one cell: severity (row) × probability (column).</div><div class="matrix"><div></div>'+PROBS.map(function(p){return '<div class="mh">'+p+'</div>';}).join('');
+    SEVS.forEach(function(s,si){h+='<div class="ml">'+s+'</div>';M[si].forEach(function(v,pi){var cc=RACC[v];h+='<button class="mc'+(d.sev===si&&d.prob===pi?' on':'')+'" style="background:'+cc[0]+';color:'+cc[1]+'" data-rac="'+si+','+pi+'" aria-label="'+s+' × '+PROBS[pi]+' = RAC '+v+'">'+v+'</button>';});});
+    h+='</div></div>';
+    h+='<div class="sec"><div class="sec-h">7 · ACTIONS</div>'+
+      '<button class="toggle'+(d.stop?' on':'')+'" data-act="stop"><span class="box">'+(d.stop?'✓':'')+'</span>Stop Work Authority used</button>'+
+      '<label class="f">Immediate action taken<textarea class="inp" data-f="immediate" placeholder="e.g. Work stopped; harness issued and tied off">'+esc(d.immediate)+'</textarea></label>'+
+      '<label class="f">Corrective / preventive action<textarea class="inp" data-f="corrective" placeholder="e.g. Refresher toolbox talk on 100% tie-off">'+esc(d.corrective)+'</textarea></label>'+
+      '<div class="grid2"><label class="f">Responsible person<input class="inp" data-f="resp" value="'+esc(d.resp)+'" placeholder="Name / role"></label><label class="f">Target date<input class="inp" type="date" data-f="due" value="'+esc(d.due)+'"></label></div></div>';
+  } else {
+    h+='<div class="sec"><div class="sec-h">6 · RECOGNITION</div><label class="f">Recognition given / notes<textarea class="inp" data-f="immediate" placeholder="e.g. Crew recognised at morning briefing">'+esc(d.immediate)+'</textarea></label></div>';
+  }
+  h+='</div>';
+  if(d.id){h+='<div class="bar"><button class="btn b-ghost" data-act="cancel">Cancel</button><button class="btn b-navy" data-act="saveEdit">Save changes</button></div>';}
+  else if(isPos){h+='<div class="bar"><button class="btn b-ghost" data-act="cancel">Cancel</button><button class="btn b-green" data-act="saveOpen">Save positive</button></div>';}
+  else{h+='<div class="bar"><button class="btn b-ghostg" data-act="saveClosed">Fixed on the spot</button><button class="btn b-navy" data-act="saveOpen">Submit &amp; assign</button></div>';}
+  $app.innerHTML=h;
+  $app.querySelectorAll('[data-f]').forEach(function(el){el.addEventListener('input',function(){S.draft[el.getAttribute('data-f')]=el.value;});el.addEventListener('change',function(){S.draft[el.getAttribute('data-f')]=el.value;});});
+}
+function renderDetail(){
+  var it=S.items.filter(function(x){return x.id===S.cur;})[0];if(!it){S.view='home';return render();}
+  var s=statusOf(it),done=s==='closed'||s==='positive',isPos=it.rac==='+';
+  var h='<div class="top"><div class="top-row"><button class="iconbtn" data-act="backFromDetail" aria-label="Back">'+ICON.back+'</button><div style="flex:1"><div class="brand" style="font-size:20px">'+esc(it.id)+'</div><div class="sub">'+esc(it.loc)+' · '+fmtDate(it.date)+' '+esc(it.time)+'</div></div><span class="pill s-'+s+'" style="margin-right:6px">'+SL[s]+'</span></div></div>';
+  h+='<div class="form" style="gap:16px">';
+  h+='<div style="display:flex;gap:12px;align-items:center"><div class="rac '+racCls(it.rac)+'" style="width:56px;height:56px;font-size:26px">'+(isPos?'+':esc(it.rac))+'<small>RAC</small></div><div><div style="font-size:18px;font-weight:800">'+esc(it.cat)+'</div><div class="desc">'+esc(it.type)+' · '+esc(it.contractor)+'</div><div class="meta" style="font-weight:500">'+esc(CATS[it.cat]||'')+'</div></div></div>';
+  h+='<div class="grid2"><div class="sec"><div class="lbl" style="color:#9A1C12">BEFORE</div>'+(it.before.length?'<div class="ph" style="height:130px"><img src="'+it.before[0]+'" alt="Before"></div>':'<div class="ph" style="height:130px;display:flex;align-items:center;justify-content:center;font-size:12px;color:#4A555E">No photo</div>')+'</div>';
+  h+='<div class="sec"><div class="lbl" style="color:var(--green-d)">AFTER</div>'+(it.after.length?'<div class="ph" style="height:130px"><img src="'+it.after[0]+'" alt="After"><button data-delph="after:0" aria-label="Remove after photo">×</button></div>':(isPos?'<div class="ph" style="height:130px"></div>':'<label class="addph after" style="height:130px">'+ICON.cam+'Add after photo<input type="file" accept="image/*" data-photo="after"></label>'))+'</div></div>';
+  h+='<div class="card">'+
+    (it.activity?'<div><div class="lbl">ACTIVITY</div><div class="val">'+esc(it.activity)+'</div></div>':'')+
+    '<div><div class="lbl">OBSERVATION</div><div class="val">'+esc(it.desc||'—')+'</div></div>'+
+    (it.hazard?'<div><div class="lbl">POTENTIAL HAZARD</div><div class="val">'+esc(it.hazard)+'</div></div>':'')+
+    (it.stop?'<div class="pill" style="background:#FDECEA;color:#9A1C12;align-self:flex-start;font-size:12px">Stop Work Authority used</div>':'')+
+    '<div><div class="lbl">'+(isPos?'RECOGNITION':'IMMEDIATE ACTION')+'</div><div class="val">'+esc(it.immediate||'—')+'</div></div>'+
+    (isPos?'':'<div><div class="lbl">CORRECTIVE / PREVENTIVE ACTION</div><div class="val">'+esc(it.corrective||'—')+'</div><div class="desc" style="margin-top:4px">'+esc(it.resp||'Unassigned')+' · Target '+fmtDate(it.due)+'</div></div>')+
+    (it.closeNote?'<div><div class="lbl">CLOSE-OUT NOTE</div><div class="val">'+esc(it.closeNote)+'</div></div>':'')+'</div>';
+  if(!isPos){
+    var tr=[['Observed & raised',fmtDate(it.date)+' '+it.time+' · '+(it.observer||''),true],['Assigned to '+(it.resp||'—'),'Target '+fmtDate(it.due),true],['Corrected (after photo)',it.after.length?'Photo attached':'Waiting',it.after.length>0||done],['Verified & closed',done?(fmtDate(it.closedAt)+' · '+(it.closedBy||'')):'Waiting',done]];
+    h+='<div class="sec"><div class="sec-h">CLOSE-OUT TRAIL</div><div class="trail">'+tr.map(function(t){return '<div class="step"><div class="dot'+(t[2]?' on':'')+'"></div><div><div style="font-size:14px;font-weight:700;color:'+(t[2]?'var(--ink)':'var(--mute)')+'">'+esc(t[0])+'</div><div class="meta" style="font-weight:500">'+esc(t[1])+'</div></div></div>';}).join('')+'</div></div>';
+  }
+  h+='<div class="grid2"><button class="btn b-ghost" data-act="edit">Edit</button><button class="btn b-red" data-act="delete">Delete</button></div>';
+  if(done&&!isPos)h+='<button class="btn b-ghost" data-act="reopen">Reopen</button>';
+  h+='</div>';
+  h+='<div class="bar"><button class="btn b-ghost" data-act="printOne">Report (PDF)</button>'+(done?'<div class="btn s-closed" style="display:flex;align-items:center;justify-content:center">'+(isPos?'Positive ✓':'Closed ✓')+'</div>':'<button class="btn b-green" data-act="close">Verify &amp; close</button>')+'</div>';
+  $app.innerHTML=h;
+}
+function renderSettings(){
+  var st=S.settings;
+  var h='<div class="top"><div class="top-row"><button class="iconbtn" data-act="saveSettings" aria-label="Back">'+ICON.back+'</button><div style="flex:1"><div class="brand" style="font-size:18px">SETTINGS</div><div class="sub">Saved on this device</div></div></div></div>';
+  h+='<div class="form">';
+  h+='<div class="sec"><div class="sec-h">OBSERVER</div><div class="grid2"><label class="f">Your name<input class="inp" data-s="observer" value="'+esc(st.observer)+'"></label><label class="f">Initials (for SOR no.)<input class="inp" data-s="initials" maxlength="4" value="'+esc(st.initials)+'" placeholder="e.g. YL"></label></div><label class="f">Designation<input class="inp" data-s="designation" value="'+esc(st.designation)+'"></label><div class="hint">Each team member uses different initials so SOR numbers never clash when records are merged (e.g. SOR-YL-0001).</div></div>';
+  h+='<div class="sec"><div class="sec-h">PROJECT (shown on reports)</div><label class="f">Project name<input class="inp" data-s="project" value="'+esc(st.project)+'"></label><div class="grid2"><label class="f">Contract No.<input class="inp" data-s="contract" value="'+esc(st.contract)+'"></label><label class="f">Prime contractor<input class="inp" data-s="prime" value="'+esc(st.prime)+'"></label></div><label class="f">Report document no.<input class="inp" data-s="docno" value="'+esc(st.docno)+'"></label></div>';
+  h+='<div class="sec"><div class="sec-h">PICK LISTS (one per line)</div><label class="f">Locations / areas<textarea class="inp" rows="5" data-s="locations">'+esc(st.locations)+'</textarea></label><label class="f">Contractors / subcontractors<textarea class="inp" rows="4" data-s="contractors">'+esc(st.contractors)+'</textarea></label></div>';
+  h+='<div class="sec"><div class="sec-h">DATA · '+S.items.length+' records</div><div class="hint">Data stays on this device only. Export a backup regularly. To combine the team\'s records, each person exports a file and the lead imports them — records merge by SOR number.</div>'+
+    '<div class="grid2"><button class="btn b-ghost" data-act="exportJson">Export backup (.json)</button><label class="btn b-ghost" style="display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden">Import / merge<input type="file" accept=".json,application/json" multiple data-act-file="import" style="position:absolute;inset:0;opacity:0"></label></div>'+
+    '<button class="btn b-ghost" data-act="exportCsv">Export register (.csv for Excel)</button>'+
+    '<button class="btn b-ghost" data-act="demo">Load sample data</button>'+
+    '<button class="btn b-red" data-act="wipe">Delete all records on this device</button></div>';
+  h+='<div class="hint" style="text-align:center">SOR App v1.4 (installed app) · works offline</div></div>';
+  h+='<div class="bar" style="grid-template-columns:1fr"><button class="btn b-navy" data-act="saveSettings">Save settings</button></div>';
+  $app.innerHTML=h;
+}
+
+// ---------- log book ----------
+function isoOf(d){return d.getFullYear()+'-'+pad(d.getMonth()+1,2)+'-'+pad(d.getDate(),2);}
+function logRange(){var L=S.log,now=new Date(),t=todayISO();
+  if(L.range==='today')return [t,t];
+  if(L.range==='week'){var d=new Date(now);var wd=(d.getDay()+6)%7;d.setDate(d.getDate()-wd);var e=new Date(d);e.setDate(d.getDate()+6);return [isoOf(d),isoOf(e)];}
+  if(L.range==='month'){return [isoOf(new Date(now.getFullYear(),now.getMonth(),1)),isoOf(new Date(now.getFullYear(),now.getMonth()+1,0))];}
+  if(L.range==='lastmonth'){return [isoOf(new Date(now.getFullYear(),now.getMonth()-1,1)),isoOf(new Date(now.getFullYear(),now.getMonth(),0))];}
+  if(L.range==='custom')return [L.from||'0000-00-00',L.to||'9999-99-99'];
+  return ['0000-00-00','9999-99-99'];}
+function logItems(){var L=S.log,r=logRange();
+  return S.items.filter(function(it){var s=statusOf(it);
+    if(it.date<r[0]||it.date>r[1])return false;
+    if(L.status==='open'&&!(s==='open'||s==='overdue'))return false;
+    if(['overdue','closed','positive'].indexOf(L.status)>=0&&s!==L.status)return false;
+    if(L.cat!=='all'&&it.cat!==L.cat)return false;
+    if(L.con!=='all'&&it.contractor!==L.con)return false;
+    return true;}).sort(function(a,b){return (a.date+a.time).localeCompare(b.date+b.time);});}
+function rangeLabel(){var r=logRange();if(r[0]==='0000-00-00'&&r[1]==='9999-99-99')return 'All records';
+  if(r[0]==='0000-00-00')return 'Up to '+fmtDate(r[1]);if(r[1]==='9999-99-99')return 'From '+fmtDate(r[0]);
+  return r[0]===r[1]?fmtDate(r[0]):fmtDate(r[0])+' – '+fmtDate(r[1]);}
+function summarize(list){var c={total:list.length,open:0,overdue:0,closed:0,positive:0,stop:0,E:0,H:0,M:0,L:0,cats:{},cons:{}};
+  list.forEach(function(it){var s=statusOf(it);c[s]++;if(it.stop)c.stop++;if(c[it.rac]!=null)c[it.rac]++;
+    c.cats[it.cat]=(c.cats[it.cat]||0)+1;c.cons[it.contractor]=(c.cons[it.contractor]||0)+1;});return c;}
+function optList(vals,cur,allLabel){return '<option value="all">'+allLabel+'</option>'+vals.map(function(v){return '<option'+(v===cur?' selected':'')+'>'+esc(v)+'</option>';}).join('');}
+function renderLogs(){
+  var L=S.log,list=logItems(),c=summarize(list);
+  var cats=Object.keys(CATS),cons=[];S.items.forEach(function(it){if(it.contractor&&cons.indexOf(it.contractor)<0)cons.push(it.contractor);});
+  var ranges=[['today','Today'],['week','This week'],['month','This month'],['lastmonth','Last month'],['all','All'],['custom','Custom']];
+  var h='<div class="top"><div class="top-row"><button class="iconbtn" data-act="home" aria-label="Back">'+ICON.back+'</button><div style="flex:1"><div class="brand" style="font-size:18px">LOG BOOK</div><div class="sub">All '+S.items.length+' records stored on this device</div></div></div></div>';
+  h+='<div class="form" style="gap:14px">';
+  h+='<div class="sec"><div class="sec-h">PERIOD</div><div class="wrap">'+ranges.map(function(r){return '<button class="cat'+(L.range===r[0]?' on':'')+'" data-range="'+r[0]+'">'+r[1]+'</button>';}).join('')+'</div>';
+  if(L.range==='custom')h+='<div class="grid2"><label class="f">From<input class="inp" type="date" data-log="from" value="'+esc(L.from)+'"></label><label class="f">To<input class="inp" type="date" data-log="to" value="'+esc(L.to)+'"></label></div>';
+  h+='</div>';
+  h+='<div class="sec"><div class="sec-h">FILTER</div><div class="grid2"><label class="f">Status<select class="inp" data-log="status">'+
+     [['all','All statuses'],['open','Open (incl. overdue)'],['overdue','Overdue only'],['closed','Closed'],['positive','Positive']].map(function(o){return '<option value="'+o[0]+'"'+(L.status===o[0]?' selected':'')+'>'+o[1]+'</option>';}).join('')+
+     '</select></label><label class="f">Category<select class="inp" data-log="cat">'+optList(cats,L.cat,'All categories')+'</select></label></div>'+
+     '<label class="f">Contractor<select class="inp" data-log="con">'+optList(cons,L.con,'All contractors')+'</select></label></div>';
+  h+='<div class="card" style="gap:8px"><div style="display:flex;justify-content:space-between;align-items:baseline"><div class="sec-h">'+esc(rangeLabel())+'</div><div style="font-size:22px;font-weight:800">'+c.total+' <span style="font-size:12px;color:var(--mute)">records</span></div></div>'+
+     '<div class="stats" style="margin:0;grid-template-columns:repeat(4,minmax(0,1fr))">'+
+     [['Open',c.open+c.overdue,'#9A3A0B'],['Overdue',c.overdue,'#B42318'],['Closed',c.closed,'#0A6B27'],['Positive',c.positive,'#0B3B5A']].map(function(x){return '<div style="background:#F4F2EE;border-radius:10px;padding:8px"><b style="font-size:22px;color:'+x[2]+'">'+x[1]+'</b><div style="font-size:11px;color:var(--mute)">'+x[0]+'</div></div>';}).join('')+'</div>'+
+     '<div class="hint">RAC E: '+c.E+' · H: '+c.H+' · M: '+c.M+' · L: '+c.L+' · Stop Work used: '+c.stop+'</div></div>';
+  h+='<div class="sec"><div class="sec-h">RECORDS</div>';
+  if(!list.length)h+='<div class="empty" style="padding:20px">No records match this period / filter.</div>';
+  h+='<div style="display:flex;flex-direction:column;gap:6px">'+list.map(function(it){var s=statusOf(it);return '<button class="item" style="padding:8px 10px;align-items:center" data-open="'+esc(it.id)+'"><div class="rac '+racCls(it.rac)+'" style="width:34px;height:34px;font-size:16px">'+(it.rac==='+'?'+':esc(it.rac))+'</div><div style="flex:1;min-width:0"><div class="meta">'+esc(it.id)+' · '+fmtDate(it.date)+'</div><div style="font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(it.cat)+' — '+esc(it.loc)+'</div></div><span class="pill s-'+s+'">'+SL[s]+'</span></button>';}).join('')+'</div></div>';
+  h+='<div class="sec"><div class="sec-h">PRINT OR SAVE AS PDF</div><div class="hint">Opens the print window — choose your printer, or "Save as PDF" as the destination.</div>'+
+     '<button class="btn b-navy" data-act="logRegister">Register — summary table (landscape)</button>'+
+     '<button class="btn b-ghost" data-act="logFull">Full reports — summary + 1 page per SOR</button>'+
+     '<button class="btn b-ghost" data-act="logCsv">Export this list to Excel (.csv)</button></div>';
+  h+='<div class="sec"><div class="sec-h">KEEP A SAFE COPY</div><div class="hint">Records are stored in this browser on this device. Save a backup file of the complete log regularly (e.g. weekly) to your work folder.</div><button class="btn b-ghost" data-act="exportJson">Save full log backup (.json)</button></div>';
+  h+='</div>';
+  $app.innerHTML=h;
+  $app.querySelectorAll('[data-log]').forEach(function(el){el.addEventListener('change',function(){S.log[el.getAttribute('data-log')]=el.value;keepScroll(renderLogs);});});
+}
+function summaryHTML(list,title){
+  var st=S.settings,c=summarize(list);
+  function tbl(obj){var k=Object.keys(obj).sort(function(a,b){return obj[b]-obj[a];});return '<table class="rp-reg"><tr><th>Item</th><th style="width:60px">Count</th></tr>'+k.map(function(x){return '<tr><td>'+esc(x)+'</td><td style="text-align:right">'+obj[x]+'</td></tr>';}).join('')+'</table>';}
+  var h='<div class="rp rp-page"><div class="rp-head"><div class="rp-logo">[MVL-YG HSE logo]</div><div style="flex:1;text-align:center"><h1>'+title+'</h1><div>'+esc(st.project||'Sagami General Depot')+' · Period: '+esc(rangeLabel())+'</div></div><div class="rp-logo">[Safety First logo]</div></div>';
+  h+='<table><tr><th>Total observations</th><td>'+c.total+'</td><th>Open (incl. overdue)</th><td>'+(c.open+c.overdue)+'</td><th>Overdue</th><td>'+c.overdue+'</td></tr>'+
+     '<tr><th>Closed</th><td>'+c.closed+'</td><th>Positive</th><td>'+c.positive+'</td><th>Stop Work used</th><td>'+c.stop+'</td></tr>'+
+     '<tr><th>RAC E / H</th><td>'+c.E+' / '+c.H+'</td><th>RAC M / L</th><td>'+c.M+' / '+c.L+'</td><th>Positive ratio</th><td>'+(c.total?Math.round(c.positive/c.total*100):0)+'%</td></tr></table>';
+  h+='<div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;margin-top:10px"><div><b>By category</b>'+tbl(c.cats)+'</div><div><b>By contractor</b>'+tbl(c.cons)+'</div></div>';
+  h+='<div class="rp-sig" style="margin-top:14px"><div><b>Prepared by</b><br>'+esc(st.observer)+' ('+esc(st.designation)+')<br>__________________</div><div><b>Reviewed by</b><br><br>__________________</div><div><b>Date</b><br><br>'+fmtDate(todayISO())+'</div></div>';
+  h+='<div class="rp-foot"><span>'+esc(st.docno)+'-SUM</span><span>Generated '+fmtDate(todayISO())+' '+nowTime()+'</span><span></span></div></div>';
+  return h;
+}
+
+// ---------- reports ----------
+function racBadge(r){var c=RACC[r];return '<span class="racb" style="background:'+c[0]+';color:'+c[1]+'">'+(r==='+'?'Positive':'RAC '+r+' · '+RACN[r])+'</span>';}
+function weekStart(iso){var p=iso.split('-'),d=new Date(+p[0],+p[1]-1,+p[2]);d.setDate(d.getDate()-((d.getDay()+6)%7));return isoOf(d);}
+function renderTeam(){
+  var list=logItems(),t=todayISO(),ranges=[['week','This week'],['month','This month'],['lastmonth','Last month'],['all','All']];
+  if(['week','month','lastmonth','all'].indexOf(S.log.range)<0)S.log.range='month';
+  var by={},cons={};
+  list.forEach(function(it){var o=it.observer||'(unknown)',s=statusOf(it);
+    var r=by[o]=by[o]||{n:0,open:0,overdue:0,closed:0,positive:0,stop:0,last:''};r.n++;if(s==='open'||s==='overdue')r.open++;if(s==='overdue')r.overdue++;if(s==='closed')r.closed++;if(s==='positive')r.positive++;if(it.stop)r.stop++;if((it.date||'')>r.last)r.last=it.date;
+    var c=cons[it.contractor]=cons[it.contractor]||{n:0,open:0,overdue:0,hi:0};c.n++;if(s==='open'||s==='overdue')c.open++;if(s==='overdue')c.overdue++;if((it.rac==='E'||it.rac==='H')&&s!=='closed')c.hi++;});
+  // last 8 weeks (all records)
+  var weeks=[],ws=weekStart(t);for(var i=7;i>=0;i--){var p=ws.split('-'),d=new Date(+p[0],+p[1]-1,+p[2]-7*i);weeks.push({k:isoOf(d),n:0,pos:0});}
+  S.items.forEach(function(it){if(!it.date)return;var k=weekStart(it.date);weeks.forEach(function(w){if(w.k===k){w.n++;if(it.rac==='+')w.pos++;}});});
+  var mx=Math.max(1,Math.max.apply(null,weeks.map(function(w){return w.n;})));
+  var overdue=S.items.filter(function(it){return statusOf(it)==='overdue';}).sort(function(a,b){return (a.due||'').localeCompare(b.due||'');});
+  var h='<div class="top"><div class="top-row"><button class="iconbtn" data-act="home" aria-label="Back">'+ICON.back+'</button><div style="flex:1"><div class="brand" style="font-size:18px">TEAM OVERVIEW</div><div class="sub">Main register · '+S.items.length+' records from the team</div></div></div></div>';
+  h+='<div class="form" style="gap:18px">';
+  h+='<div class="tgrid"><div class="sec"><div class="sec-h">BRING IN TEAM RECORDS</div><div class="hint">Each team member taps <b>Send my records</b> below (or Settings → Export backup) on their phone and copies the file to this laptop by USB or a shared folder. Select all the files here at once — records merge with photos, and duplicates are skipped.</div>'+
+     '<label class="btn b-navy" style="display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden">Import team files (.json)<input type="file" accept=".json,application/json" multiple data-act-file="import" style="position:absolute;inset:0;opacity:0"></label></div>'+
+     '<div class="sec"><div class="sec-h">SEND MY RECORDS (team members)</div><div class="hint">Saves all records on this device as one file, named with your initials and today\'s date, to hand to the main laptop.</div><button class="btn b-ghost" data-act="exportJson">Send my records (.json file)</button></div></div>';
+  h+='<div class="sec"><div class="sec-h">PERIOD</div><div class="wrap">'+ranges.map(function(r){return '<button class="cat'+(S.log.range===r[0]?' on':'')+'" data-trange="'+r[0]+'">'+r[1]+'</button>';}).join('')+'</div><div class="hint">'+esc(rangeLabel())+' · '+list.length+' observations</div></div>';
+  var obs=Object.keys(by).sort(function(a,b){return by[b].n-by[a].n;});
+  h+='<div class="tgrid"><div class="sec"><div class="sec-h">BY OBSERVER</div><div class="tw"><table class="tt"><thead><tr><th>Observer</th><th class="n">Total</th><th class="n">Open</th><th class="n">Overdue</th><th class="n">Closed</th><th class="n">Positive</th><th>Last entry</th></tr></thead><tbody>'+
+     (obs.length?obs.map(function(o){var r=by[o];return '<tr><td><b>'+esc(o)+'</b></td><td class="n">'+r.n+'</td><td class="n">'+r.open+'</td><td class="n" style="'+(r.overdue?'color:#B42318;font-weight:800':'')+'">'+r.overdue+'</td><td class="n">'+r.closed+'</td><td class="n">'+r.positive+'</td><td>'+fmtDate(r.last)+'</td></tr>';}).join(''):'<tr><td colspan="7" style="color:var(--mute)">No records in this period yet.</td></tr>')+'</tbody></table></div></div>';
+  var cl=Object.keys(cons).sort(function(a,b){return cons[b].overdue-cons[a].overdue||cons[b].open-cons[a].open;});
+  h+='<div class="sec"><div class="sec-h">BY CONTRACTOR</div><div class="tw"><table class="tt"><thead><tr><th>Contractor</th><th class="n">Total</th><th class="n">Open</th><th class="n">Overdue</th><th class="n">Open RAC E/H</th></tr></thead><tbody>'+
+     (cl.length?cl.map(function(k){var c=cons[k];return '<tr><td><b>'+esc(k)+'</b></td><td class="n">'+c.n+'</td><td class="n">'+c.open+'</td><td class="n" style="'+(c.overdue?'color:#B42318;font-weight:800':'')+'">'+c.overdue+'</td><td class="n">'+c.hi+'</td></tr>';}).join(''):'<tr><td colspan="5" style="color:var(--mute)">No records in this period yet.</td></tr>')+'</tbody></table></div></div></div>';
+  h+='<div class="tgrid"><div class="sec"><div class="sec-h">OBSERVATIONS PER WEEK (LAST 8 WEEKS)</div><div class="wk">'+weeks.map(function(w){var p=w.k.split('-');return '<div><span class="v">'+w.n+'</span><b style="height:'+Math.round(w.n/mx*100)+'%"></b><span>'+p[2]+'/'+p[1]+'</span></div>';}).join('')+'</div><div class="hint">Week starting Monday (day/month).</div></div>';
+  h+='<div class="sec"><div class="sec-h">OVERDUE ACTIONS · '+overdue.length+'</div><div style="display:flex;flex-direction:column;gap:6px">'+(overdue.length?overdue.slice(0,12).map(function(it){return '<button class="item" style="padding:8px 10px;align-items:center" data-open="'+esc(it.id)+'"><div class="rac '+racCls(it.rac)+'" style="width:34px;height:34px;font-size:16px">'+esc(it.rac)+'</div><div style="flex:1;min-width:0"><div class="meta">'+esc(it.id)+' · due '+fmtDate(it.due)+'</div><div style="font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(it.contractor)+' — '+esc(it.resp||'unassigned')+'</div></div><span class="pill s-overdue">Overdue</span></button>';}).join(''):'<div class="empty" style="padding:16px">No overdue actions.</div>')+'</div></div></div>';
+  h+='<div class="sec"><div class="sec-h">REPORTS</div><div class="grid2"><button class="btn b-ghost" data-act="logs">Open Log Book (PDF / Excel)</button><button class="btn b-ghost" data-act="settings">Team settings</button></div></div>';
+  h+='</div>';
+  $app.innerHTML=h;
+}
+function reportHTML(it){
+  var st=S.settings,s=statusOf(it),isPos=it.rac==='+';
+  var h='<div class="rp rp-page"><div class="rp-head"><div class="rp-logo">[MVL-YG HSE logo]</div><div style="flex:1;text-align:center"><h1>SAFETY OBSERVATION REPORT (SOR)</h1><div>USACE Japan District · Sagami General Depot</div></div><div class="rp-logo">[Safety First logo]</div></div>';
+  h+='<table><tr><th>Project</th><td>'+esc(st.project||'—')+'</td><th>SOR No.</th><td><b>'+esc(it.id)+'</b></td></tr>'+
+    '<tr><th>Contract No.</th><td>'+esc(st.contract||'—')+'</td><th>Date / Time</th><td>'+fmtDate(it.date)+' · '+esc(it.time)+'</td></tr>'+
+    '<tr><th>Prime Contractor</th><td>'+esc(st.prime)+'</td><th>Observed by</th><td>'+esc(it.observer||'—')+'</td></tr>'+
+    '<tr><th>Subcontractor</th><td>'+esc(it.contractor)+'</td><th>Designation</th><td>'+esc(it.designation||'—')+'</td></tr>'+
+    '<tr><th>Location</th><td>'+esc(it.loc)+'</td><th>Activity</th><td>'+esc(it.activity||'—')+'</td></tr></table>';
+  h+='<div class="rp-sec"><h2>1. OBSERVATION DETAILS</h2><div class="in">'+TYPES.map(function(t){return '<span style="margin-right:12px;white-space:nowrap"><span class="ck'+(it.type===t?' on':'')+'"></span>'+esc(t)+'</span>';}).join('')+
+    '\n<b>Category:</b> '+esc(it.cat)+(CATS[it.cat]?'   <b>Reference:</b> '+esc(CATS[it.cat]):'')+'\n<b>Risk:</b> '+racBadge(it.rac)+(isPos?'':'  ('+esc(SEVS[it.sev]||'')+' × '+esc(PROBS[it.prob]||'')+')')+
+    '\n\n<b>Description of observation:</b>\n'+esc(it.desc||'—')+(it.hazard?'\n\n<b>Potential hazard / consequence:</b>\n'+esc(it.hazard):'')+
+    (it.stop?'\n\n<span style="color:#9A1C12;font-weight:700"><span class="ck on" style="background:#B42318;border-color:#B42318"></span>Stop Work Authority exercised</span>':'')+'</div></div>';
+  h+='<div class="rp-sec"><h2 style="background:#0B8530">2. '+(isPos?'RECOGNITION GIVEN':'IMMEDIATE ACTION TAKEN')+'</h2><div class="in">'+esc(it.immediate||'—')+'</div></div>';
+  if(!isPos){
+    h+='<div class="rp-sec"><h2 style="background:#EE6F30;color:#1A0E05">3. CORRECTIVE / PREVENTIVE ACTION</h2><div class="in">'+esc(it.corrective||'—')+'</div>'+
+      '<table style="border-left:none;border-right:none"><tr><th>Responsible</th><td>'+esc(it.resp||'—')+'</td><th>Target date</th><td>'+fmtDate(it.due)+'</td><th>Status</th><td><b>'+SL[s]+'</b>'+(it.closedAt?' ('+fmtDate(it.closedAt)+')':'')+'</td></tr></table>'+
+      (it.closeNote?'<div class="in"><b>Close-out note:</b> '+esc(it.closeNote)+'</div>':'')+'</div>';
+  }
+  h+='<div class="rp-sec"><h2>'+(isPos?'3':'4')+'. PHOTO EVIDENCE</h2><div class="rp-ph"><div><div style="font-weight:700;color:#9A1C12;margin-bottom:3px">BEFORE</div>'+(it.before[0]?'<img src="'+it.before[0]+'">':'<div class="none">No photo</div>')+'</div><div><div style="font-weight:700;color:#0A6B27;margin-bottom:3px">AFTER</div>'+(it.after[0]?'<img src="'+it.after[0]+'">':'<div class="none">No photo</div>')+'</div></div></div>';
+  h+='<div class="rp-sig"><div><b>Observed by</b><br><br>__________________<br>Date: '+fmtDate(it.date)+'</div><div><b>Contractor supervisor</b><br><br>__________________<br>Date: ____________</div><div><b>Verified &amp; closed</b><br><br>__________________<br>Date: '+(it.closedAt?fmtDate(it.closedAt):'____________')+'</div></div>';
+  h+='<div class="rp-foot"><span>'+esc(st.docno)+' · Rev 0</span><span>Generated '+fmtDate(todayISO())+' '+nowTime()+'</span><span>'+esc(it.id)+'</span></div></div>';
+  return h;
+}
+function registerHTML(list){
+  var st=S.settings,c={open:0,overdue:0,closed:0,positive:0};list.forEach(function(it){c[statusOf(it)]++;});
+  var h='<div class="rp rp-page"><div class="rp-head"><div class="rp-logo">[MVL-YG HSE logo]</div><div style="flex:1;text-align:center"><h1>SAFETY OBSERVATION REGISTER</h1><div>'+esc(st.project||'Sagami General Depot')+' · Period: '+esc(S.view==='logs'?rangeLabel():'Current view')+' · printed '+fmtDate(todayISO())+'</div></div><div class="rp-logo">[Safety First logo]</div></div>';
+  h+='<div style="margin-bottom:6px"><b>Total:</b> '+list.length+' · <b>Open (incl. overdue):</b> '+(c.open+c.overdue)+' · <b>Overdue:</b> '+c.overdue+' · <b>Closed:</b> '+c.closed+' · <b>Positive:</b> '+c.positive+'</div>';
+  h+='<table class="rp-reg"><thead><tr><th>SOR No.</th><th>Date</th><th>RAC</th><th>Type / Category</th><th>Location</th><th>Contractor</th><th>Observation</th><th>Responsible</th><th>Target</th><th>Status</th></tr></thead>';
+  list.forEach(function(it){var s=statusOf(it),rc=RACC[it.rac];h+='<tr><td>'+esc(it.id)+'</td><td>'+fmtDate(it.date)+'</td><td style="background:'+rc[0]+';color:'+rc[1]+';text-align:center;font-weight:700">'+esc(it.rac)+'</td><td>'+esc(it.type)+'<br>'+esc(it.cat)+'</td><td>'+esc(it.loc)+'</td><td>'+esc(it.contractor)+'</td><td>'+esc(it.desc)+'</td><td>'+esc(it.resp||'')+'</td><td>'+fmtDate(it.due)+'</td><td><b>'+SL[s]+'</b></td></tr>';});
+  h+='</table><div class="rp-foot"><span>'+esc(st.docno)+'-REG</span><span></span><span></span></div></div>';
+  return h;
+}
+function doPrint(html,landscape){var ps=document.getElementById('pagesize');if(!ps){ps=document.createElement('style');ps.id='pagesize';document.head.appendChild(ps);}
+  ps.textContent='@media print{@page{size:A4 '+(landscape?'landscape':'portrait')+';margin:10mm}}';
+  var p=document.getElementById('print');p.innerHTML=html;
+  var imgs=p.querySelectorAll('img'),n=imgs.length;if(!n){setTimeout(function(){window.print();},50);return;}
+  var k=0;imgs.forEach(function(im){if(im.complete){if(++k===n)window.print();}else{im.onload=im.onerror=function(){if(++k===n)window.print();};}});}
+
+// ---------- file export ----------
+function download(name,data,type){var b=new Blob([data],{type:type});var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},500);}
+function exportCsv(list,name){
+  var cols=['id','date','time','type','cat','rac','loc','contractor','activity','desc','hazard','stop','immediate','corrective','resp','due','status','closedAt','closedBy','closeNote','observer'];
+  var rows=[['SOR No','Date','Time','Type','Category','RAC','Location','Contractor','Activity','Description','Hazard','Stop Work','Immediate Action','Corrective Action','Responsible','Target Date','Status','Closed Date','Closed By','Close-out Note','Observer'].join(',')];
+  list.forEach(function(it){rows.push(cols.map(function(k){return csvCell(k==='status'?SL[statusOf(it)]:k==='stop'?(it.stop?'Yes':'No'):it[k]);}).join(','));});
+  download(name,'\ufeff'+rows.join('\r\n'),'text/csv');}
+function csvCell(v){v=String(v==null?'':v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;}
+
+// ---------- actions ----------
+function nextId(){var st=S.settings;st.seq=(st.seq||0)+1;putMeta('settings',st);return 'SOR-'+(st.initials?st.initials.toUpperCase()+'-':'')+pad(st.seq,4);}
+function saveDraft(mode){
+  var d=S.draft;if(!d.desc.trim()){alert('Please enter a description of the observation.');return;}
+  var isPos=d.type==='Positive';
+  if(!isPos&&mode==='open'&&!d.due){if(!confirm('No target date set. Submit anyway?'))return;}
+  var it=Object.assign({},d);it.rac=draftRac(d);
+  if(!it.id){it.id=nextId();it.createdAt=new Date().toISOString();it.observer=S.settings.observer;it.designation=S.settings.designation;}
+  if(isPos){it.status='positive';}
+  else if(mode==='closed'){it.status='closed';it.closedAt=todayISO();it.closedBy=S.settings.observer;it.closeNote=it.closeNote||'Corrected on the spot.';if(!it.due)it.due=todayISO();}
+  else if(mode==='open'){it.status='open';}
+  else if(mode==='edit'&&!isPos&&it.status==='positive'){it.status='open';}
+  it.updatedAt=new Date().toISOString();
+  putItem(it).then(function(){var i=S.items.findIndex(function(x){return x.id===it.id;});if(i>=0)S.items[i]=it;else S.items.push(it);
+    S.cur=it.id;S.view=mode==='edit'?'detail':'home';S.filter='all';render();window.scrollTo(0,0);toast(it.id+' saved');});
+}
+function curItem(){return S.items.filter(function(x){return x.id===S.cur;})[0];}
+function demoData(){var t=todayISO(),y=new Date(Date.now()-864e5),yd=y.getFullYear()+'-'+pad(y.getMonth()+1,2)+'-'+pad(y.getDate(),2),tm=new Date(Date.now()+864e5),td=tm.getFullYear()+'-'+pad(tm.getMonth()+1,2)+'-'+pad(tm.getDate(),2);
+  var base={before:[],after:[],observer:S.settings.observer||'Sample observer',designation:'SSHO',activity:'',hazard:'',stop:false};
+  return [
+    Object.assign({},base,{id:'SOR-DEMO-0001',date:t,time:'09:15',type:'Unsafe Act',cat:'Fall Protection',loc:'Bldg 710 · Level 3',contractor:'Subcontractor A',activity:'Scaffold dismantling',desc:'Worker dismantling scaffold at approx. 6 m without harness and lanyard.',hazard:'Fall from height — serious injury or fatality.',sev:1,prob:1,rac:'H',stop:true,immediate:'Work stopped. Harness issued and tied off. On-the-spot toolbox talk.',corrective:'Supervisors to enforce 100% tie-off; refresher TBT for all scaffold crew.',resp:'Sub A foreman',due:t,status:'closed',closedAt:t,closedBy:'SSHO',closeNote:'Corrected on the spot.',createdAt:t+'T09:15'}),
+    Object.assign({},base,{id:'SOR-DEMO-0002',date:t,time:'09:40',type:'Unsafe Condition',cat:'Electrical',loc:'Bldg 710 · Level 1',contractor:'Subcontractor B',desc:'Temporary power cord routed through standing water near panel; no GFCI test tag.',hazard:'Electric shock.',sev:1,prob:2,rac:'H',immediate:'Area barricaded; cord de-energised.',corrective:'Re-route cords overhead; GFCI test and tag all temp panels.',resp:'Sub B foreman',due:td,status:'open',createdAt:t+'T09:40'}),
+    Object.assign({},base,{id:'SOR-DEMO-0003',date:t,time:'10:05',type:'Positive',cat:'Housekeeping',loc:'Laydown yard',contractor:'Subcontractor A',desc:'Materials stacked, labelled and chocked; walkways clear.',sev:3,prob:4,rac:'+',immediate:'Crew recognised at morning briefing.',status:'positive',createdAt:t+'T10:05'}),
+    Object.assign({},base,{id:'SOR-DEMO-0004',date:yd,time:'14:20',type:'Unsafe Condition',cat:'Excavation',loc:'Gate 3',contractor:'Subcontractor B',desc:'Trench approx. 1.8 m deep with no ladder access; spoil pile at edge.',hazard:'Cave-in / unable to exit.',sev:0,prob:3,rac:'H',immediate:'Workers removed from trench.',corrective:'Install ladder access; set spoil back at least 0.6 m.',resp:'Sub B supervisor',due:yd,status:'open',createdAt:yd+'T14:20'})
+  ];}
+
+document.addEventListener('click',function(e){
+  var el=e.target.closest('button,[data-act]');if(!el||el.tagName==='LABEL')return;
+  var f=el.getAttribute('data-filter');if(f){S.filter=S.filter===f&&f!=='all'?'all':f;return renderHome();}
+  var o=el.getAttribute('data-open');if(o){S.back=(S.view==='logs'||S.view==='team')?S.view:'home';S.cur=o;S.view='detail';render();window.scrollTo(0,0);return;}
+  var tr=el.getAttribute('data-trange');if(tr){S.log.range=tr;return keepScroll(renderTeam);}
+  var rg=el.getAttribute('data-range');if(rg){S.log.range=rg;return keepScroll(renderLogs);}
+  var t=el.getAttribute('data-type');if(t){S.draft.type=t;return keepScroll(renderForm);}
+  var c=el.getAttribute('data-cat');if(c){S.draft.cat=c;return keepScroll(renderForm);}
+  var r=el.getAttribute('data-rac');if(r){var p=r.split(',');S.draft.sev=+p[0];S.draft.prob=+p[1];return keepScroll(renderForm);}
+  var dp=el.getAttribute('data-delph');if(dp){var q=dp.split(':');
+    if(S.view==='form'){S.draft[q[0]].splice(+q[1],1);return keepScroll(renderForm);}
+    var it=curItem();if(it&&confirm('Remove this photo?')){it[q[0]].splice(+q[1],1);putItem(it).then(renderDetail);}return;}
+  var a=el.getAttribute('data-act');if(!a)return;
+  var it2=curItem();
+  switch(a){
+    case 'new':S.draft=blankDraft();S.view='form';render();window.scrollTo(0,0);break;
+    case 'cancel':if(S.draft&&S.draft.id){S.view='detail';}else{S.view='home';}render();break;
+    case 'home':S.view='home';render();window.scrollTo(0,0);break;
+    case 'backFromDetail':S.view=S.back||'home';render();break;
+    case 'logs':S.view='logs';render();window.scrollTo(0,0);break;
+    case 'team':S.view='team';render();window.scrollTo(0,0);break;
+    case 'logRegister':var lr=logItems();if(!lr.length){alert('No records in this period / filter.');break;}doPrint(registerHTML(lr),true);break;
+    case 'logFull':var lf=logItems();if(!lf.length){alert('No records in this period / filter.');break;}
+      if(lf.length>40&&!confirm(lf.length+' reports will be generated. This may take a moment. Continue?'))break;
+      doPrint(summaryHTML(lf,'SAFETY OBSERVATION SUMMARY')+lf.map(reportHTML).join(''),false);break;
+    case 'logCsv':exportCsv(logItems(),'SOR-log-'+todayISO()+'.csv');break;
+    case 'stop':S.draft.stop=!S.draft.stop;keepScroll(renderForm);break;
+    case 'saveOpen':saveDraft('open');break;
+    case 'saveClosed':saveDraft('closed');break;
+    case 'saveEdit':saveDraft('edit');break;
+    case 'edit':S.draft=JSON.parse(JSON.stringify(it2));S.view='form';render();window.scrollTo(0,0);break;
+    case 'delete':if(confirm('Delete '+it2.id+'? This cannot be undone.')){delItem(it2.id).then(function(){S.items=S.items.filter(function(x){return x.id!==it2.id;});S.view='home';render();toast('Deleted');});}break;
+    case 'close':
+      if(!it2.after.length&&!confirm('No after photo attached. Close anyway?'))break;
+      var note=prompt('Close-out note (what was done / verified):',it2.closeNote||'');if(note===null)break;
+      it2.status='closed';it2.closedAt=todayISO();it2.closedBy=S.settings.observer;it2.closeNote=note;it2.updatedAt=new Date().toISOString();
+      putItem(it2).then(function(){renderDetail();toast(it2.id+' closed');});break;
+    case 'reopen':it2.status='open';it2.closedAt='';it2.closedBy='';putItem(it2).then(renderDetail);break;
+    case 'printOne':doPrint(reportHTML(it2),false);break;
+    case 'settings':S.view='settings';render();window.scrollTo(0,0);break;
+    case 'saveSettings':
+      $app.querySelectorAll('[data-s]').forEach(function(x){S.settings[x.getAttribute('data-s')]=x.value.trim();});
+      putMeta('settings',S.settings).then(function(){S.view='home';render();toast('Settings saved');});break;
+    case 'exportJson':download('SOR-backup-'+(S.settings.initials||'device')+'-'+todayISO()+'.json',JSON.stringify({app:'sor-app',v:1,exported:new Date().toISOString(),items:S.items},null,0),'application/json');break;
+    case 'exportCsv':exportCsv(S.items,'SOR-register-'+todayISO()+'.csv');break;
+    case 'demo':var dd=demoData();Promise.all(dd.map(putItem)).then(function(){dd.forEach(function(x){var i=S.items.findIndex(function(y){return y.id===x.id;});if(i>=0)S.items[i]=x;else S.items.push(x);});renderSettings();toast('Sample data loaded');});break;
+    case 'wipe':if(confirm('Delete ALL '+S.items.length+' records on this device? Export a backup first.')&&confirm('Are you sure? This cannot be undone.')){Promise.all(S.items.map(function(x){return delItem(x.id);})).then(function(){S.items=[];renderSettings();toast('All records deleted');});}break;
+  }
+});
+function keepScroll(fn){var y=window.scrollY;fn();window.scrollTo(0,y);}
+document.addEventListener('change',function(e){
+  var el=e.target;
+  var ph=el.getAttribute&&el.getAttribute('data-photo');
+  if(ph&&el.files&&el.files[0]){
+    compress(el.files[0]).then(function(url){if(!url)return;
+      if(S.view==='form'){S.draft[ph].push(url);keepScroll(renderForm);}
+      else{var it=curItem();it[ph]=[url];it.updatedAt=new Date().toISOString();putItem(it).then(function(){keepScroll(renderDetail);toast('After photo added');});}
+    });return;}
+  if(el.getAttribute&&el.getAttribute('data-act-file')==='import'&&el.files&&el.files.length){importFiles([].slice.call(el.files));el.value='';}
+});
+
+function importFiles(files){
+  var added=0,upd=0,bad=0,people={};
+  function one(file){return new Promise(function(res){var fr=new FileReader();fr.onload=function(){var list;
+      try{var d=JSON.parse(fr.result);list=Array.isArray(d)?d:d.items;if(!Array.isArray(list))throw 0;}catch(e){bad++;return res();}
+      Promise.all(list.map(function(x){if(!x||!x.id)return;var i=S.items.findIndex(function(y){return y.id===x.id;});
+        x.before=x.before||[];x.after=x.after||[];if(x.observer)people[x.observer]=1;
+        if(i<0){S.items.push(x);added++;return putItem(x);}
+        if((x.updatedAt||'')>(S.items[i].updatedAt||'')){S.items[i]=x;upd++;return putItem(x);}
+      })).then(res);};fr.onerror=function(){bad++;res();};fr.readAsText(file);});}
+  files.reduce(function(p,f){return p.then(function(){return one(f);});},Promise.resolve()).then(function(){
+    render();toast('Imported '+files.length+' file(s): '+added+' new, '+upd+' updated'+(bad?' · '+bad+' file(s) not valid':''));
+    var n=Object.keys(people).length;if(n)putMeta('lastImport',{at:new Date().toISOString(),files:files.length,added:added,updated:upd});
+  });
+}
+
+// ---------- install as app ----------
+var deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferredPrompt=e;if(S.view==='home')render();});
+window.addEventListener('appinstalled',function(){deferredPrompt=null;toast('SOR App installed on this phone');if(S.view==='home')render();});
+document.addEventListener('click',function(e){if(e.target.closest&&e.target.closest('[data-install]')&&deferredPrompt){deferredPrompt.prompt();deferredPrompt.userChoice.then(function(){deferredPrompt=null;render();});}});
+if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost')){navigator.serviceWorker.register('sw.js').catch(function(){});}
+
+// ---------- boot ----------
+openDB().then(function(){if(storeMode==='memory')showStorageWarn('This viewer cannot save data. Open the file in Chrome (Android) or Safari (iPhone) — see the instructions you received with the app.');return Promise.all([getAll(),getMeta('settings')]);}).then(function(r){
+  S.items=r[0]||[];S.settings=Object.assign({},DEF_SETTINGS,r[1]||{});
+  render();
+  if(!S.settings.observer){S.view='settings';render();toast('Welcome — enter your name and initials first');}
+  if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();
+});
+})();
+</script>
+</body>
+</html>
